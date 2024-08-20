@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { addProductAsync } from "../../Redux/Reducers/productReducer";
 import { useNavigate } from "react-router-dom";
 
-function CreateFrom() {
+function CreateForm() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [product, setProduct] = useState({
@@ -47,4 +47,4 @@ function CreateFrom() {
     )
 }
 
-export default CreateFrom;
+export default CreateForm;

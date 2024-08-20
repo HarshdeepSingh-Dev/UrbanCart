@@ -41,7 +41,8 @@ function NavBar() {
                     <img src="https://cdn-icons-png.flaticon.com/128/14090/14090273.png" alt="add" />
                 </div>               
             </div>   
-            <div className={styles.profile}>
+            <div className={styles.profile}
+                onClick={()=>navigateTo('/login')}>
                 <span>User</span>
                 <img src="https://cdn-icons-png.flaticon.com/128/3135/3135715.png" alt="user" />
             </div>     

@@ -1,0 +1,44 @@
+.loginForm{
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin: 8vh auto;
+    padding: 2%;
+    width: 26vw;
+    background-color: white;
+    box-shadow: 0 2px 8px 0 rgba(33, 39, 71, 0.4);
+    border-radius: 10px;
+}
+.loginForm h2{
+    font-size: 24px;
+    height: 20px;
+    font-weight: 550;
+    color: rgba(0, 0, 0, 0.812);
+    margin: auto;
+}
+.loginForm .input{
+    display: flex;
+    flex-direction: column;
+}
+.loginForm .input label{
+    font-weight: 450;
+}
+.loginForm .input input{
+    height: 28px;
+    border: 1px solid rgb(171, 170, 170);
+    padding: 2px 4px;
+    border-radius: 4px;
+    outline: none;
+}
+.loginForm button{
+    font-size: 16px;
+    padding: 10px;
+    color: white;
+    background-color: rgb(53, 53, 53);
+    border: none;
+    border-radius: 4px;
+}
+.loginForm span{
+    margin: auto;
+    color: gray;
+}

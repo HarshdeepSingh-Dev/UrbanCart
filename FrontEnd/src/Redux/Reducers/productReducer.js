@@ -2,8 +2,9 @@ import axios from 'axios';
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import { db } from '../../firebase';
 import {toast} from "react-toastify";
-import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 const url = "https://my-json-server.typicode.com/Harshh-singh/Ecommerce-demo/blob/master/products/";
+const api = "http://localhost:8000";
 
 const initialState = {
     totalCartItems:0,
@@ -93,6 +94,33 @@ const ProductSlice = createSlice({
     }
 })
 
+// log in the user
+export const loginAsync = createAsyncThunk(
+    "user/Login",
+    async(user,{rejectWithValue})=>{
+        try {
+            const res = await axios.post(`${api}/user/login`,user);
+            console.log(res);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+);
+
+// signup/create new user
+export const signupAsync = createAsyncThunk(
+    "user/signup",
+    async(user,{rejectWithValue})=>{
+        try {
+            const res = await axios.post(`${api}/user/signup`,user);
+            console.log(res);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+)
+
+
 //getting all products from api
 export const getProductsAsync = createAsyncThunk(
     "products/get",
@@ -106,40 +134,16 @@ export const getProductsAsync = createAsyncThunk(
     }
 );
 
-//adding product to cart in firestore db
+//sending product to server to add into db
 export const addToCartAsync = createAsyncThunk(
     "products/addToCart",
     async(product,{rejectWithValue})=>{
         try {
-            const cart = await getDocs(collection(db,"Cart"));
-            let itemExists = false;
-            cart.forEach((item)=>{
-                if (item.data().id===product.id) {
-                    itemExists=true;
-                    const productId=item.id;
-                    const currentQuantity=item.data().quantity;
-                    const cartItemRef=doc(db,"Cart",productId);
-                     updateDoc(cartItemRef,{
-                        quantity:currentQuantity+1,
-                     })
-                     toast.success("Added to Cart");
-                }
-            });
-            if(!itemExists){
-                await addDoc(collection(db,"Cart"), {
-                    id:product.id,
-                    description:product.description,
-                    image:product.image,
-                    name:product.name,
-                    price:product.price,
-                    quantity:1
-                })
-                toast.success("Added to Cart");
-            }
+            const res = await axios.post(`${api}/cart/add`,product);
+            console.log(res);
             
-        } catch (error) {
-            toast.error("Error adding to cart");
-            return rejectWithValue(error);
+        }catch (error) {
+            console.log(error);
         }
     }
 );

@@ -54,10 +54,6 @@
 .navbar .profile img{
     height: 4vh;
 }
-@media (max-width: 768px) {
-    .navbar .sections .cart p {
-        top: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
+.navbar .profile:hover{
+    cursor: pointer;
 }

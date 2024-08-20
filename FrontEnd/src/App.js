@@ -7,7 +7,9 @@ import DetailsPage from './Components/ProductsDetailsPage/ProductDetailsPage';
 import {Provider} from 'react-redux';
 import { store } from './Redux/store';
 import EditProduct from './Components/EditProduct/editProduct';
-import CreateFrom from './Components/CreatePage/CreateProductForm';
+import CreateForm from './Components/CreatePage/CreateProductForm';
+import LoginPage from './Components/LoginPage/loginPage';
+import SignupPage from './Components/SignupPage/signupPage';
 
 const router = createBrowserRouter([
   {path: "/", element:<NavBar/>,
@@ -16,7 +18,9 @@ const router = createBrowserRouter([
       {path:'/cart',element:<Cart/>},
       {path:'/productDetails', element:<DetailsPage/>},
       {path:"/productEdit", element:<EditProduct/>},
-      {path:"/addProduct", element:<CreateFrom/>}
+      {path:"/addProduct", element:<CreateForm/>},
+      {path:"/login", element:<LoginPage/>},
+      {path:"/signup", element:<SignupPage/>}
     ]
   }
 ])
