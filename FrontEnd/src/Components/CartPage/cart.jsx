@@ -1,11 +1,13 @@
 import styles from "./cart.module.css";
 import CartCard from "../CartCard/CartCard";
 import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from 'react-router-dom';
 import { getFromDbAsync, purchaseOrderAsync } from "../../Redux/Reducers/productReducer";
 import { useEffect, useState } from "react";
 import Loader from 'react-spinners/FadeLoader';
 
 function Cart() {
+    const navigate=useNavigate();
     const dispatch = useDispatch();
     const { cartItems, loading }=useSelector((state)=>state.productReducer);
     const [totalPrice,setTotalPrice]=useState(0);
@@ -14,22 +16,28 @@ function Cart() {
     useEffect(()=>{
         let newTotalPrice=0;
         cartItems.forEach(item=>{
-            newTotalPrice+=item.price * item.quantity;
+            newTotalPrice+=item.product.price * item.quantity;
        })
        setTotalPrice(newTotalPrice);
     },[cartItems]);
 
     // to get all cart items
-    useEffect(()=>{
-        dispatch(getFromDbAsync());
-    },[dispatch]);
+    useEffect(() => {
+        dispatch(getFromDbAsync())
+        // if user is unauthenticated redirect to home
+            .unwrap()   //to return a promise that is either fulfilled
+            .catch(error => {
+                console.log('>>>>>', error);
+                navigate('/');
+            });
+    }, [dispatch, navigate]);
+    
 
     // to purchase cart item
     const handlePurchase = () => {
-        dispatch(purchaseOrderAsync());
+        dispatch(purchaseOrderAsync(cartItems));
     }
 
-    console.log(cartItems);
 
     return(
         <>

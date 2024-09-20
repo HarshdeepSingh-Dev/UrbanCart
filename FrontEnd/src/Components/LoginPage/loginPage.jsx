@@ -1,15 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./loginPage.module.css";
 import {useDispatch} from 'react-redux'
-import { loginAsync } from "../../Redux/Reducers/productReducer";
+import { loginAsync } from "../../Redux/Reducers/userReducer";
+import { toast } from "react-toastify";
 
 function LoginPage() {
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [userDetails, setUserDetails] = useState({
         email:"",
         password:""
     });
 
+    // handle email and password field
     const handleChange=(e)=>{
         const {name,value} = e.target;
         setUserDetails({
@@ -18,18 +22,30 @@ function LoginPage() {
         })
     };
 
-    const handleSubmit=(e)=>{
+    // handle submit btn
+    const handleSubmit= async(e)=>{
         e.preventDefault();
-        // check if email and password are there
-        if(!userDetails.email||!userDetails.password){
-            window.alert("Please enter details correctly");
-        }
-        // dispatch to send user data
-        dispatch(loginAsync(userDetails));
-        setUserDetails({
-            email:"",
-            password:""
-        })
+            // check if email and password are there
+            if(!userDetails.email||!userDetails.password){
+                window.alert("Please enter details correctly");
+                return
+            }
+            // dispatch to send user data
+            try {
+                const res = await dispatch(loginAsync(userDetails));
+                if(res.error){
+                    return;
+                }
+                navigate('/');
+                setUserDetails({
+                    email:"",
+                    password:""
+                });
+            } catch (error) {
+                toast.error(error);
+                console.log(error);
+                return;
+            }             
     }
 
     return(

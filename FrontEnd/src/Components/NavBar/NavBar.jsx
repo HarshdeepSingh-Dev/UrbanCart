@@ -7,7 +7,7 @@ function NavBar() {
     const navigate = useNavigate();
     const {cartItems} = useSelector((state)=>state.productReducer);
     const [noOfCartItems, setNoOfCartItems]=useState(0);
-
+    const [name, setName] = useState(null);
     
     const navigateTo = (link) =>{
         navigate(link);
@@ -24,6 +24,12 @@ function NavBar() {
         }
     },[cartItems]);
 
+    // get userinfo from localstorage
+    useEffect(()=>{
+        const name=localStorage.getItem('userName');
+        setName(name);
+    })
+
     return(
         <>
         <div className={styles.navbar}>
@@ -35,19 +41,28 @@ function NavBar() {
                     <span>Cart</span>
                     <img src="https://cdn-icons-png.flaticon.com/128/3737/3737372.png" alt="cart" />
                 </div>
-                <div onClick={()=>navigateTo("/addProduct")}
-                     className={styles.addbtn}>
-                    <span>Add a Product</span>
-                    <img src="https://cdn-icons-png.flaticon.com/128/14090/14090273.png" alt="add" />
-                </div>               
-            </div>   
-            <div className={styles.profile}
-                onClick={()=>navigateTo('/login')}>
-                <span>User</span>
-                <img src="https://cdn-icons-png.flaticon.com/128/3135/3135715.png" alt="user" />
-            </div>     
+                <span onClick={()=>navigateTo("/orders")}>Orders</span>             
+            </div>
+            {name?
+                <>
+                    <div className={styles.profile}
+                    onClick={()=>navigateTo('/profile')}>
+                    <span>{name}</span>
+                    <img src="https://cdn-icons-png.flaticon.com/128/3135/3135715.png" alt="user" />
+                    </div> 
+                 </>
+            :
+                <>
+                    <div className={styles.profile}
+                    onClick={()=>navigateTo('/login')}>
+                    <span>User</span>
+                    <img src="https://cdn-icons-png.flaticon.com/128/3135/3135715.png" alt="user" />
+                    </div> 
+                </>
+            }       
                      
         </div>
+        
          <Outlet/>  
          </>
     )

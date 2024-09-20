@@ -1,8 +1,6 @@
 import axios from 'axios';
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
-import { db } from '../../firebase';
 import {toast} from "react-toastify";
-import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 const url = "https://my-json-server.typicode.com/Harshh-singh/Ecommerce-demo/blob/master/products/";
 const api = "http://localhost:8000";
 
@@ -13,6 +11,8 @@ const initialState = {
     loading:false,
     error:null,
     editedProduct:null,
+    message:null,
+    orders:[]
 }
 
 const ProductSlice = createSlice({
@@ -44,6 +44,18 @@ const ProductSlice = createSlice({
             state.error=action.payload;
             state.loading=false;
         })
+        // case for add to cart
+        .addCase(addToCartAsync.fulfilled,(state, action)=>{
+            state.message=action.payload;
+            state.loading=false;
+        })
+        .addCase(addToCartAsync.pending,(state)=>{
+            state.loading=true;
+        })
+        .addCase(addToCartAsync.rejected,(state, action)=>{
+            state.loading=false;
+            state.error=action.payload
+        })
         // add cases for getFromDbAsync
         .addCase(getFromDbAsync.fulfilled,(state,action)=>{
             state.cartItems=action.payload;
@@ -58,7 +70,7 @@ const ProductSlice = createSlice({
         })
         // add cases for removeFromCartAsync
         .addCase(removeFromCartAsync.fulfilled,(state,action)=>{
-            state.cartItems=state.cartItems.filter(item=>item.id!==action.payload);
+            state.cartItems=state.cartItems.filter(item=>item.product.id!==action.payload);
             state.loading=false;
         })
         .addCase(removeFromCartAsync.pending,(state)=>{
@@ -67,59 +79,66 @@ const ProductSlice = createSlice({
         .addCase(removeFromCartAsync.rejected,(state, action)=>{
             state.error = action.payload;
             state.loading=false;
+        })            
+        // add case for increasing quantity
+        .addCase(increaseQuantity.fulfilled, (state,action)=>{
+            const productId = action.payload;
+            const product = state.cartItems.find(item=>item.product.id===productId);
+            if(product){
+                product.quantity+=1;
+            }
+            state.loading=false;
         })
-        // add cases for purchaseOrderAsync
-        .addCase(purchaseOrderAsync.fulfilled, (state,action)=>{
+        .addCase(increaseQuantity.pending, (state)=>{
+            state.loading=true;
+        })
+        .addCase(increaseQuantity.rejected, (state,action)=>{
+            state.loading=false;
+            state.error=action.payload;
+        })
+        // add case for decreasing quantity
+        .addCase(decreaseQuantity.fulfilled, (state,action)=>{
+            const productId = action.payload;
+            const product = state.cartItems.find(item=>item.product.id===productId);
+            if(product){
+                product.quantity-=1;
+            }
+            state.loading=false;
+        })
+        .addCase(decreaseQuantity.pending, (state)=>{
+            state.loading=true;
+        })
+        .addCase(decreaseQuantity.rejected, (state,action)=>{
+            state.loading=false;
+            state.error=action.payload;
+        })
+        // add case for purchase items
+        .addCase(purchaseOrderAsync.fulfilled,(state, action)=>{
             state.cartItems=[];
+            state.orders=action.payload;
             state.loading=false;
         })
-        .addCase(purchaseOrderAsync.pending, (state)=>{
+        .addCase(purchaseOrderAsync.pending,(state)=>{
             state.loading=true;
         })
-        .addCase(purchaseOrderAsync.rejected, (state,action)=>{
+        .addCase(purchaseOrderAsync.rejected,(state, action)=>{
             state.error=action.payload;
             state.loading=false;
-        })     
-        // add case to add a new product
-        .addCase(addProductAsync.fulfilled, (state, action)=>{
-            state.products.push(...state.products, action.payload);
+        })
+        // get orders from db
+        .addCase(getOrders.fulfilled, (state, action)=>{
+            state.orders=action.payload;
             state.loading=false;
-        })   
-        .addCase(addProductAsync.pending, (state)=>{
+        })
+        .addCase(getOrders.pending, (state, action)=>{
             state.loading=true;
-        })   
-        .addCase(addProductAsync.rejected, (state, action)=>{
+        })
+        .addCase(getOrders.rejected, (state, action)=>{
             state.error=action.payload;
-        })   
+            state.loading=false;
+        })
     }
-})
-
-// log in the user
-export const loginAsync = createAsyncThunk(
-    "user/Login",
-    async(user,{rejectWithValue})=>{
-        try {
-            const res = await axios.post(`${api}/user/login`,user);
-            console.log(res);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-);
-
-// signup/create new user
-export const signupAsync = createAsyncThunk(
-    "user/signup",
-    async(user,{rejectWithValue})=>{
-        try {
-            const res = await axios.post(`${api}/user/signup`,user);
-            console.log(res);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-)
-
+});
 
 //getting all products from api
 export const getProductsAsync = createAsyncThunk(
@@ -138,12 +157,20 @@ export const getProductsAsync = createAsyncThunk(
 export const addToCartAsync = createAsyncThunk(
     "products/addToCart",
     async(product,{rejectWithValue})=>{
-        try {
-            const res = await axios.post(`${api}/cart/add`,product);
-            console.log(res);
-            
+        try {     
+            const res = await axios.post(`${api}/cart/add`,
+                product,
+            {
+                headers: {"Authorization": `Bearer ${localStorage.getItem('token')}`},
+            }
+        );
+        toast.success(res.data.message);
+        return res.data.message;
+
         }catch (error) {
             console.log(error);
+            toast.error(error.response.data.message);
+            return rejectWithValue(error.response);
         }
     }
 );
@@ -153,40 +180,82 @@ export const getFromDbAsync = createAsyncThunk(
     "products/getFromDb",
     async(_,{rejectWithValue})=>{
         try {
-            const querySnapshot = await getDocs(collection(db,"Cart"));
-            const items = []; 
-            querySnapshot.forEach((doc) => {
-                items.push({...doc.data()});
-              });
-              return items;
+            const res = await axios.get(`${api}/cart/allproducts`,
+                {
+                    headers:{"Authorization": `Bearer ${localStorage.getItem('token')}`}
+                }
+            );
+            console.log(res.data);
+              return res.data;
         } catch (error) {
-            return rejectWithValue(error);
+            console.log(error);
+            return rejectWithValue(error.response.data);
         }
     }   
-)
+);
 
 // remove a product from cart
 export const removeFromCartAsync = createAsyncThunk(
     "product/removeFromCart",
     async(product,{rejectWithValue})=>{
         try {
-            const cartItems=await getDocs(collection(db,"Cart"));
-            let docId=null;
-            let itemId=null;
-            cartItems.forEach((doc)=>{
-                if (product.id===doc.data().id) {
-                    docId=doc.id;
-                    itemId=doc.data().id;
+            const res = await axios.post(`${api}/cart/remove`,
+                product,
+                {
+                    headers:{"Authorization":`Bearer ${localStorage.getItem('token')}`}
                 }
-            })
-            if(docId){
-                await deleteDoc(doc(db,"Cart",docId));
-                toast.success("Product removed from Cart");
-                return itemId;
-            }
+            );
+            toast.success(res.data.message);
+            return res.data.product.id;
         } catch (error) {
-            toast.error(error);
-            return rejectWithValue(error);
+            console.log(error);
+            toast.error(error.response.message);
+            return rejectWithValue(error.response.message);
+        }
+    }
+);
+
+// to increase product qty in cart
+export const increaseQuantity=createAsyncThunk(
+    "product/increaseQuantity",
+    async(product,{rejectWithValue})=>{
+        try {
+            const res = await axios.put(`${api}/cart/increaseQuantity`,
+                product,
+                {
+                    headers: {"Authorization":`Bearer ${localStorage.getItem('token')}`}
+                }
+            );
+            console.log(res.data);
+            toast.success(res.data.message);
+            return res.data.product.id
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response.data.message);
+            return rejectWithValue(error.response.data);
+        }
+    }
+    
+);
+
+// to decrease product qty in cart
+export const decreaseQuantity=createAsyncThunk(
+    "product/decreaseQuantity",
+    async(product,{rejectWithValue})=>{
+        try {
+            const res = await axios.put(`${api}/cart/decreaseQuantity`,
+                product,
+                {
+                    headers: {"Authorization":`Bearer ${localStorage.getItem('token')}`}
+                }
+            );
+            console.log(res.data);
+            toast.success(res.data.message);
+            return res.data.product.id
+        } catch (error) {
+            console.log(error);
+            toast.error(error.response.data.message);
+            return rejectWithValue(error.response.data);
         }
     }
 );
@@ -194,35 +263,43 @@ export const removeFromCartAsync = createAsyncThunk(
 // purchase cart order
 export const purchaseOrderAsync=createAsyncThunk(
     "product/purchase",
+    async(cartItems,{rejectWithValue})=>{
+        try {
+            const res = await axios.post(`${api}/cart/purchase`,
+                cartItems,
+                {
+                    headers: {"Authorization":`Bearer ${localStorage.getItem('token')}`}
+                }
+            );
+            console.log(res);
+            toast.success(res.data.message);
+            return res.data.orderdItems;
+        } catch (error) {
+            console.log(error);
+            return rejectWithValue(error.response.data);
+        }
+    }
+);
+
+// get orders of the user
+export const getOrders = createAsyncThunk(
+    'product/getOrders',
     async(_,{rejectWithValue})=>{
         try {
-            const cart = await getDocs(collection(db,"Cart"));
-            cart.forEach(async (item)=>{
-                await deleteDoc(doc(db,"Cart",item.id));
-            });
-            toast.success("Purchase successful!")
-            return {message:"Purchase successful!"}
+            const res = await axios.get(`${api}/orders/getOrders`,
+                {
+                    headers: {"Authorization":`Bearer ${localStorage.getItem('token')}`}
+                }
+            )
+            console.log(res.data.orders);
+            return res.data.orders;
 
         } catch (error) {
-            toast.error(error);
-            return rejectWithValue(error);
+            console.log(error);
+            return rejectWithValue(error.response.data);
         }
     }
-)
-
-// add a new product
-export const addProductAsync=createAsyncThunk(
-    "product/addnew",
-    async(product,{rejectWithValue})=>{
-        try {
-            const res = await axios.post(`${url}`,product);
-            toast.success("Product added!!");
-            return res.data;
-        } catch (error) {
-            return rejectWithValue(error.message);
-        }
-    }
-)
+);
 
 export const productReducer = ProductSlice.reducer;
 export const productActions = ProductSlice.actions;

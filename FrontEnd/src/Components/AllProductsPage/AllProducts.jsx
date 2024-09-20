@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { getProductsAsync } from '../../Redux/Reducers/productReducer';
 import Loader from "react-spinners/FadeLoader";
 import { useLocation } from 'react-router-dom';
+import { userAuth } from '../../Redux/Reducers/userReducer';
 
 function AllProducts() {
     const dispatch = useDispatch();
@@ -27,6 +28,11 @@ function AllProducts() {
             setProducts(products);
         }
     },[loading, products]);
+
+    // to check if the user is authenticated or not
+    useEffect(()=>{
+        dispatch(userAuth());
+    },[dispatch])
 
     // to edit a product from our list
     useEffect(()=>{

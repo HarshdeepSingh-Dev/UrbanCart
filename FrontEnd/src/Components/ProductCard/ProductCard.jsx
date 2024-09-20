@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { addToCartAsync } from '../../Redux/Reducers/productReducer';
 import { productActions } from '../../Redux/Reducers/productReducer';
 import {useDispatch} from 'react-redux';
+import { toast } from 'react-toastify';
 
 function Card({product}) {
     const navigate = useNavigate();
@@ -16,6 +17,13 @@ function Card({product}) {
     // add to cart product
     const handleAddToCart = (e, product)=>{
         e.stopPropagation();
+        const auth = localStorage.getItem('isAuthenticated');
+        const isAuth = auth === 'true';
+        // check if user is authenticated or not
+        if(!isAuth||isAuth===undefined){
+            toast.error("Please sign in first!!");
+            return;
+        }
         dispatch(addToCartAsync(product));
     }
 
@@ -24,6 +32,7 @@ function Card({product}) {
         e.stopPropagation();
         dispatch(productActions.deleteProduct(product.id));
     }
+    
     // edit the product
     const handleEditProduct = (e, product)=>{
         e.stopPropagation();

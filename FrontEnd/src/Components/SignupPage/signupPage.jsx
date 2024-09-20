@@ -1,9 +1,12 @@
 import styles from './signupPage.module.css';
 import { useState } from 'react';
 import {useDispatch} from 'react-redux'
-import { signupAsync } from '../../Redux/Reducers/productReducer';
+import { useNavigate } from "react-router-dom";
+import { signupAsync } from '../../Redux/Reducers/userReducer';
+import { toast } from 'react-toastify';
 
 function SignupPage(){
+    const navigate = useNavigate();
     const dispatch = useDispatch();
     const [userDetails, setUserDetails]=useState({
         name:"",
@@ -19,14 +22,31 @@ function SignupPage(){
         });
     }
 
-    const handleSubmit=(e)=>{
+    // handle submit btn
+    const handleSubmit= async(e)=>{
         e.preventDefault();
-        dispatch(signupAsync(userDetails));
-        setUserDetails({
-            name:"",
-            email:"",
-            password:""
-        })
+         // check if email, name and password are there
+         if(!userDetails.email||!userDetails.password||!userDetails.name){
+            window.alert("Please enter details correctly");
+            return
+        }
+        // dispatch to send user data
+        try {
+            const res = await dispatch(signupAsync(userDetails));
+            if(res.error){
+                return;
+            }
+            navigate('/login');
+            setUserDetails({
+                name:"",
+                email:"",
+                password:""
+            })
+        } catch (error) {
+            toast.error(error);
+            console.log(error);
+            return;
+        }
     }
     return(
         <>

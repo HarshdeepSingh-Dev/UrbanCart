@@ -2,6 +2,7 @@ import styles from './detailsPage.module.css';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from "react-redux";
 import { addToCartAsync } from '../../Redux/Reducers/productReducer';
+import { toast } from 'react-toastify';
 
 function DetailsPage() {
     const loaction = useLocation();
@@ -11,6 +12,13 @@ function DetailsPage() {
 
     // to add product in cart
     const handleCart=(product)=>{
+        const auth = localStorage.getItem('isAuthenticated');
+        const isAuth = auth === 'true';
+        // check if user is authenticated or not
+        if(!isAuth||isAuth===undefined){
+            toast.error("Please sign in first!!");
+            return;
+        }
         dispatch(addToCartAsync(product));
     }
 

@@ -1,6 +1,6 @@
 import styles from './cartCard.module.css';
 import {useDispatch} from "react-redux";
-import { removeFromCartAsync } from '../../Redux/Reducers/productReducer';
+import { removeFromCartAsync, increaseQuantity, decreaseQuantity } from '../../Redux/Reducers/productReducer';
 
 function CartCard({product}) {
 
@@ -10,19 +10,35 @@ function CartCard({product}) {
         dispatch(removeFromCartAsync(product));
     }
 
+    const handleincreaseQuantity=(product)=>{
+        dispatch(increaseQuantity(product));
+    }
+
+    const handledecreaseQuantity=(product)=>{
+        dispatch(decreaseQuantity(product));
+    }
+
     return(
         <div className={styles.cartCard}>
             <div className={styles.imgContainer}>
-                <img src={product.image} alt={product.name} />
+                <img src={product.product.image} alt={product.name} />
             </div>        
             <div className={styles.details}>
-                <h3>{product.name}</h3>
-                <span>${product.price}</span>
+                <h3>{product.product.name}</h3>
+                <span>${product.product.price}</span>
 
                 <div className={styles.quantity}>
-                    <img src="https://cdn-icons-png.flaticon.com/128/1828/1828899.png" alt="minus" className={styles.incImg}/>
+                    <img src="https://cdn-icons-png.flaticon.com/128/1828/1828899.png" 
+                    alt="minus" 
+                    onClick={()=>handledecreaseQuantity(product)}
+                    className={styles.incImg}/>
+
                     <span>{product.quantity}</span>
-                    <img src="https://cdn-icons-png.flaticon.com/128/1828/1828919.png" alt="plus" className={styles.incImg}/>
+
+                    <img src="https://cdn-icons-png.flaticon.com/128/1828/1828919.png" 
+                    alt="plus" 
+                    onClick={()=>handleincreaseQuantity(product)}
+                    className={styles.incImg}/>
                 </div>
             </div>
             <button type="submit"
