@@ -30,23 +30,23 @@ function DetailsPage() {
     return(
         <div className={styles.detailsCard}>
             <div className={styles.imgContainer}>
-                <img src={product.image} alt={product.name} />
+                <img src={product.images[0]} alt={product.name} />
             </div>
             <div className={styles.aboutProduct}>
-                <div className={styles.nameContainer}><h2>{product.name}</h2></div>
+                <div className={styles.nameContainer}><h2>{product.title}</h2></div>
                 <span>${product.price}</span>
-                <div className={styles.editbtn}
+                {/* <div className={styles.editbtn}
                     onClick={()=>handleEdit(product)}
                 >
                     <span>Edit</span>
                     <img src="https://cdn-icons-png.flaticon.com/128/1159/1159633.png" alt="edit" /> 
-                </div>
+                </div> */}
             </div>
             <div className={styles.productDetails}>
                 <span>
                     {product.description}
                 </span>
-                <div className={styles.deleteAddBtn}>
+                <div className={styles.cartAddBtn}>
                     <div className={styles.btn}
                     onClick={()=>handleCart(product)}>
                         <span>Cart</span>

@@ -1,4 +1,5 @@
-const port = 8000;
+require('dotenv').config();
+const port = process.env.PORT;
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -7,6 +8,7 @@ const db = require('./config/mongoose');
 const passport = require('passport');
 const session = require('express-session');
 const passportLocal = require('./config/passport-local-strategy');
+
 
 
 // for secure communication between client and server

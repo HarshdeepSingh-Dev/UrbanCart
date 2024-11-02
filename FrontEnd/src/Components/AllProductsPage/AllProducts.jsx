@@ -15,7 +15,7 @@ function AllProducts() {
     const location = useLocation();
     const newProduct = location.state;
     const [sort, setSort] = useState(false);
-
+    console.log(products);
 
     // to get products from api
     useEffect(()=>{
@@ -25,7 +25,7 @@ function AllProducts() {
     // to set products in local state
     useEffect(()=>{
         if(!loading){
-            setProducts(products);
+            setProducts(products.products);
         }
     },[loading, products]);
 

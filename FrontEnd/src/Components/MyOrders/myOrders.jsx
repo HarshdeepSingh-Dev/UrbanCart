@@ -23,15 +23,22 @@ function MyOrders(){
                 <Loader className={styles.loader}/>
                     :
                     <div className={styles.ordersPage}>
-                        <h1>MY ORDERS</h1>
-                        {orders.length>0?
-                        <>
-                        {orders.map((item,index)=>(
-                            <OrderCard product={item} key={index}/>
-                        ))}
-                        </>
+                        {Array.isArray(orders)&&orders.length>0?
+                            <>
+                                <h2>Order History</h2>
+                                {/* <hr /> */}
+                                <div className={styles.allOrders}>
+                                    {orders.map((item,index)=>(
+                                        <OrderCard product={item} key={index}/>
+                                    ))}
+                                </div>
+                            </>
                         :
-                            <h1> No Orders </h1>
+                            <div className={styles.imgContainer}>
+                              
+                                <img src="https://cdn-icons-png.flaticon.com/128/17569/17569003.png" alt="no-orders" />
+                                <span>Oops!! seems like nothing here</span>
+                            </div>
                         }
                     </div>
                 

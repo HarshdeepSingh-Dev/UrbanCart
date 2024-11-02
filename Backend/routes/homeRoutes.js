@@ -19,5 +19,4 @@ router.use('/user',userRoutes);
 // redirect request to order routes
 router.use('/orders', orderRoutes);
 
-
 module.exports = router;

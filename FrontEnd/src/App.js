@@ -14,11 +14,13 @@ import PageNotFound from './Components/NotFound/NotFound';
 import UserProfile from './Components/UserProfile/userProfile';
 import RedirectAuth from './Routes/redirect-authentication';
 import MyOrders from './Components/MyOrders/myOrders';
+import Home from './Components/Homepage/homepage';
 
 const router = createBrowserRouter([
   {path: "/", element:<NavBar/>,
     children: [
-      {path: '', element:<AllProducts/>},
+      {path: '', element:<Home/>},
+      {path: '/allProducts', element:<AllProducts/>},
       {path:'/cart',element:<Protected><Cart/></Protected>},
       {path:'/productDetails', element:<DetailsPage/>},
       {path:"/productEdit", element:<EditProduct/>},

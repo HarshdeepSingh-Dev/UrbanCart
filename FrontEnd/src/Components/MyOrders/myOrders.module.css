@@ -1,3 +1,29 @@
+.orders{
+    margin: 4vh 0vh;
+}
 .orders .loader{
     margin: 30vh auto;
+}
+.orders .ordersPage h2{
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    text-align: center;
+}
+.orders .allOrders{
+    display: grid;
+    gap: 10vh;
+}
+.orders .imgContainer{
+    height: 30vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 24vh auto;
+}
+.orders .imgContainer img{
+    height: 60%;
+}
+.orders .imgContainer span{
+    font-size: 26px;
+    font-weight: 700;
+    color: gray;
 }

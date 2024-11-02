@@ -10,6 +10,28 @@
     box-shadow: 0 2px 8px 0 rgba(33, 39, 71, 0.4);
 }
 .navbar .sections{
+    width: 64%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    justify-content: space-between;
+}
+.navbar .sections .logo{
+    display: flex;
+    align-items: center;
+    gap: 1vh;
+}
+.navbar .sections .logo .imageContainer{
+    height: 4vh;
+}
+.navbar .sections .logo .imageContainer img{
+    height: 90%;
+}
+.navbar .sections .logo span{
+    font-size: 28px;
+    font-weight: 700;
+}
+.navbar .sections .links{
     display: flex;
     gap: 4vw;
 }

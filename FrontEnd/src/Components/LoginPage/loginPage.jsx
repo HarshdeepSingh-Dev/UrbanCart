@@ -36,7 +36,7 @@ function LoginPage() {
                 if(res.error){
                     return;
                 }
-                navigate('/');
+                navigate('/allProducts');
                 setUserDetails({
                     email:"",
                     password:""

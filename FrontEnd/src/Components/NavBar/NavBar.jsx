@@ -34,14 +34,23 @@ function NavBar() {
         <>
         <div className={styles.navbar}>
             <div className={styles.sections}>
-                <span onClick={()=>navigateTo("/")}>ECommerce</span>
-                <span onClick={()=>navigateTo("/")}>Products</span>
-                <div className={styles.cart} onClick={()=>navigateTo("/cart")}>             
-                    <p>{noOfCartItems}</p>
-                    <span>Cart</span>
-                    <img src="https://cdn-icons-png.flaticon.com/128/3737/3737372.png" alt="cart" />
+                <div className={styles.logo}>
+                    <div className={styles.imageContainer}>
+                        <img src="https://cdn-icons-png.flaticon.com/128/869/869636.png" alt="shop" />
+                    </div>
+                    <span onClick={()=>navigateTo("/")}>UrbanCart</span>
                 </div>
-                <span onClick={()=>navigateTo("/orders")}>Orders</span>             
+                <div className={styles.links}>
+                    <span onClick={()=>navigateTo("/")}>Home</span>
+                    <span onClick={()=>navigateTo("/allProducts")}>Products</span>
+                    <div className={styles.cart} onClick={()=>navigateTo("/cart")}>             
+                        <p>{noOfCartItems}</p>
+                        <span>Cart</span>
+                        <img src="https://cdn-icons-png.flaticon.com/128/3737/3737372.png" alt="cart" />
+                    </div>
+                    <span onClick={()=>navigateTo("/orders")}>Orders</span>    
+                </div>
+                         
             </div>
             {name?
                 <>

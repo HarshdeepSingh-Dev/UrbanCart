@@ -1,8 +1,8 @@
 import axios from 'axios';
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import {toast} from "react-toastify";
-const url = "https://my-json-server.typicode.com/Harshh-singh/Ecommerce-demo/blob/master/products/";
-const api = "http://localhost:8000";
+const url = "https://dummyjson.com/products";   //for getting dummy products
+const api = "http://localhost:8000";            //for connection with our backend
 
 const initialState = {
     totalCartItems:0,
@@ -18,18 +18,7 @@ const initialState = {
 const ProductSlice = createSlice({
     name:"product",
     initialState:initialState,
-    reducers:{
-        // delete product from list
-        deleteProduct:(state,action)=>{
-            const productId = action.payload;
-            state.products = state.products.filter(product=>product.id!==productId);
-            toast.success("Product deleted!!");
-        },
-        // edit product
-        editProduct:(state, action)=>{
-             state.editedProduct=action.payload;
-        }
-    },
+    reducers:{},
     extraReducers:builder=>{
         builder
         // add cases for getProductsAsync
@@ -272,8 +261,55 @@ export const purchaseOrderAsync=createAsyncThunk(
                 }
             );
             console.log(res);
-            toast.success(res.data.message);
+            const username = localStorage.getItem('userName');
+            const useremail = localStorage.getItem('userEmail');
+
+            // Open Razorpay Checkout
+            
+             /* global Razorpay */   //this comment is for including razorpay script globally
+            const options = {
+                key: process.env.RAZORPAY_KEY_ID,
+                amount: res.data.amount,
+                currency: 'INR',
+                name: "UrbanCart",
+                description: 'Purchase items',
+                order_id: res.data.orderId, // This is the order_id created in the backend
+                
+                // Payment success handler
+                handler: async function (res) {
+                    try {
+                        const paymentResponse = await axios.post(`${api}/orders/verifyPayment`,{
+                            orderId: res.razorpay_order_id,
+                            paymentId: res.razorpay_payment_id,
+                            signature: res.razorpay_signature,
+                            cartProducts:cartItems
+                        },
+                    {
+                        headers:{"Authorization":`Bearer ${localStorage.getItem('token')}`}
+                    }
+                    );
+
+                        console.log(">>>final response<<<",paymentResponse);
+                        toast.success('Payment successful');
+
+                    } catch (error) {
+                        console.log(res);
+                        toast.error('Payment Failed. Please try again.');
+                    }
+                },
+                prefill: {
+                  name: username,
+                  email: useremail,
+                },
+                theme: {
+                  color: '#F37254'
+                },
+              };
+        
+            const razorpay = new Razorpay(options);
+            razorpay.open();
             return res.data.orderdItems;
+
         } catch (error) {
             console.log(error);
             return rejectWithValue(error.response.data);

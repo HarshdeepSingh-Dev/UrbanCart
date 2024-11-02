@@ -3,21 +3,22 @@ const User = require('../models/userSchema');
 const Cart = require('../models/cartSchema');
 const Product = require('../models/productSchema');
 const Orders = require('../models/ordersSchema');
+const Razorpay = require('razorpay');
 
 // controller for add to cart
 module.exports.addToCart = async function(req,res){
     try {
         // Check if the product already exists in the database
         let product = await Product.findOne({ id: req.body.id });
-
+        console.log(req.body);
         // If not, create a new product
         if (!product) {
             product = await Product.create({
                 id: req.body.id,
-                name: req.body.name,
+                name: req.body.title,
                 price: req.body.price,
                 description: req.body.description,
-                image: req.body.image
+                image: req.body.images[0]
             });
         };
         const userId = req.user._id;
@@ -186,49 +187,37 @@ module.exports.decreaseQty = async function(req,res){
 
 // purchase cart items
 module.exports.purchase = async function(req,res) {
-    try {
-       
-        const userId = req.user._id;
-        const cartProducts = req.body;
+        // creating new razorpay instance
+        const razorpay = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET
+        });
 
-        let userOrders = await Orders.findOne({user:userId});
-        
-        if(!userOrders){
-            userOrders = new Orders({
-                user:userId,
-                orderItems:[
-                    {
-                        orderDate:Date.now(),
-                        items: cartProducts.map(item=>(
-                                    {
-                                        product:item.product._id,
-                                        quantity:item.quantity
-                                    }
-                                ))
-                    }
-                ]
+        try{
+            const userId = req.user._id;
+            const cartProducts = req.body;
+
+            const options = {
+                 // amount will be calculated in smallest unit (paise INR)
+                amount: Math.round(cartProducts.reduce((total, item) => total + item.product.price * item.quantity, 0) * 100),
+                currency: "INR",
+                // to create unique receipt with each order
+                receipt: `receipt_${userId.toString().slice(0,10)}_${Date.now()}`
+            };
+
+            console.log(options.amount);
+
+            const order = await razorpay.orders.create(options);
+
+            res.status(200).json({
+                message:'Order created',
+                orderId:order.id,
+                amount:options.amount
             });
-        }
-        else{
-            userOrders.orderItems.push({
-                orderDate:Date.now(),
-                items:cartProducts.map(item=>(
-                        {product:item.product._id, quantity:item.quantity}
-                    ))
-            })
-         
-        };
-
-        await userOrders.save();
-
-        // after items purchased clear that user's cart
-        await Cart.findOneAndUpdate(
-            {user:userId},
-            {products:[]}
-        );
-
-        return res.status(200).json({message:'Order successfull',orderdItems:cartProducts});
+        
     } catch (error) {
         console.log(error);
+        return res.status(500).json({ error: "An error occurred during the purchase process" });
     }
+
 }

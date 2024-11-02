@@ -30,7 +30,7 @@ module.exports.login = async function(req,res){
             if(!isMatch){
                 return res.status(401).send({
                     success:false,
-                    message:"Invalid password"
+                    message:"Incorrect email or password"
                 })
             };
             // token
