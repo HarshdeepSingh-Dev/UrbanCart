@@ -20,7 +20,7 @@ app.use(express.urlencoded({extended:true}));
 
 app.use(session({
     name:"e-commerce",
-    secret:"something",
+    secret:process.env.SESSION_SECRET,
     saveUninitialized:true,
     resave:false,
     cookie:{

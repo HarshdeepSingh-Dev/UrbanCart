@@ -1,8 +1,8 @@
 import axios from 'axios';
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import {toast} from "react-toastify";
-const url = "https://dummyjson.com/products";   //for getting dummy products
-const api = "http://localhost:8000";            //for connection with our backend
+const url = process.env.REACT_APP_PRODUCTS_API;   //for getting dummy products
+const api = process.env.REACT_APP_BACKEND_API;            //for connection with our backend
 
 const initialState = {
     totalCartItems:0,
@@ -268,7 +268,7 @@ export const purchaseOrderAsync=createAsyncThunk(
             
              /* global Razorpay */   //this comment is for including razorpay script globally
             const options = {
-                key: process.env.RAZORPAY_KEY_ID,
+                key: process.env.REACT_APP_RAZORPAY_KEY_ID,
                 amount: res.data.amount,
                 currency: 'INR',
                 name: "UrbanCart",

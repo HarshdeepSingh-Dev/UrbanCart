@@ -68,8 +68,8 @@ function AllProducts() {
 
     // to unsort products
     const handleUnsort=()=>{
-        if(Products&&products){
-            setProducts(products);
+        if(Products&&products.products){
+            setProducts(products.products);
         }
         setSort(!sort);
     }

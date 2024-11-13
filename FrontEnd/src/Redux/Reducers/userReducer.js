@@ -1,7 +1,7 @@
 import axios from 'axios';
 import {createSlice, createAsyncThunk} from "@reduxjs/toolkit";
 import {toast} from "react-toastify";
-const api = "http://localhost:8000";
+const api = process.env.REACT_APP_BACKEND_API; ;
 
 const initialState = {
     error:null,
