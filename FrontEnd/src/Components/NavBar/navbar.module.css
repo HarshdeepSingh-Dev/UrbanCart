@@ -1,0 +1,81 @@
+.navbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 10vh;
+    padding: 0vh 2vw;
+    font-size: 20px;
+    font-weight: 600;
+    background-color: #F6F5F2;
+    box-shadow: 0 2px 8px 0 rgba(33, 39, 71, 0.4);
+}
+.navbar .sections{
+    width: 64%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    justify-content: space-between;
+}
+.navbar .sections .logo{
+    display: flex;
+    align-items: center;
+    gap: 1vh;
+}
+.navbar .sections .logo .imageContainer{
+    height: 4vh;
+}
+.navbar .sections .logo .imageContainer img{
+    height: 90%;
+}
+.navbar .sections .logo span{
+    font-size: 28px;
+    font-weight: 700;
+}
+.navbar .sections .links{
+    display: flex;
+    gap: 4vw;
+}
+.navbar .sections span{
+    cursor: pointer;
+}
+.navbar .sections div{
+    cursor: pointer;
+}
+.navbar .sections .cart{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+}
+.navbar .sections .cart img{
+    height: 18px;
+}
+.navbar .sections .cart p{
+    margin: 0px;
+    border-radius: 50px;
+    position: absolute;
+    top: -10px;
+    left: 52px;
+    background-color: orange;
+    padding: 0px 7px;
+    font-size: 16px;
+}
+.navbar .sections .addbtn{
+    display: flex;
+    align-items: center;
+    gap: 1vh;
+}
+.navbar .sections .addbtn img{
+    height: 20px;
+} 
+.navbar .profile{
+    display: flex;
+    gap: 1vw;
+    align-items: center;
+}
+.navbar .profile img{
+    height: 4vh;
+}
+.navbar .profile:hover{
+    cursor: pointer;
+}
